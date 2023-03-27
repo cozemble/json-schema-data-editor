@@ -1,1 +1,1 @@
-import '$lib/styles/global.css';
+import '$lib/styles/global.css'
