@@ -73,3 +73,7 @@ const handleHistory = (path: SimplePath, previous: AnyValue, current: AnyValue):
 
 	addToHistory(path, previous, current)
 }
+
+export const undo = () => {}
+
+export const redo = () => {}

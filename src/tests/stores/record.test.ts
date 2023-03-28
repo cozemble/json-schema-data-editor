@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest'
 import { render, screen } from '@testing-library/svelte'
 import { get } from 'svelte/store'
 
-import { record, editValue, history, historyIndex } from '../../lib/stores/record'
+import { record, editValue, history, historyIndex, undo, redo } from '../../lib/stores/record'
 
 const mockRecord = {
 	name: 'John Doe',
@@ -148,6 +148,118 @@ describe('RECORD STORE', () => {
 				expect(logs[1].path).to.equal('age', 'should have the last edit path')
 				expect(logs[0].current).to.equal('Mike Doe', 'should have the first value')
 				expect(logs[1].current).to.equal(43, 'should have the last value')
+			})
+		})
+
+		describe('- SHOULD UNDO & REDO', () => {
+			it('should undo the last edit', () => {
+				reset()
+
+				editValue('name', 'Mike Doe')
+				editValue('age', 43)
+
+				undo()
+
+				expect(get(record).name).to.equal(
+					'Mike Doe',
+					'no undo should have been done with the first edit'
+				)
+				expect(get(record).age).to.equal(mockRecord.age, 'should have undone the last edit')
+			})
+
+			it('should redo the last undo', () => {
+				reset()
+
+				editValue('name', 'Mike Doe')
+				editValue('age', 43)
+
+				undo()
+
+				expect(get(record).age).to.equal(
+					mockRecord.age,
+					'should have undone the last edit before redo'
+				)
+
+				redo()
+
+				expect(get(record).name).to.equal(
+					'Mike Doe',
+					'no undo should have been done with the first edit'
+				)
+				expect(get(record).age).to.equal(43, 'should have redone the last edit')
+			})
+
+			it('should undo multiple edits', () => {
+				reset()
+
+				editValue('name', 'Mike Doe')
+				editValue('age', 43)
+				editValue('family.father', 'Brad Doe Sr.')
+
+				undo()
+				undo()
+
+				expect(get(record).name).to.equal(
+					'Mike Doe',
+					'no undo should have been done with the first edit'
+				)
+				expect(get(record).age).to.equal(mockRecord.age, 'should have undone the second edit')
+				expect(get(record)?.family?.father).to.equal(
+					mockRecord.family.father,
+					'should have undone the last edit'
+				)
+			})
+
+			it('should redo multiple edits', () => {
+				reset()
+
+				editValue('name', 'Mike Doe')
+				editValue('age', 43)
+				editValue('family.father', 'Brad Doe Sr.')
+
+				undo()
+				undo()
+
+				expect(get(record).age).to.equal(
+					mockRecord.age,
+					'should have undone the second edit before redo'
+				)
+				expect(get(record)?.family?.father).to.equal(
+					mockRecord.family.father,
+					'should have undone the last edit before redo'
+				)
+
+				redo()
+				redo()
+
+				expect(get(record).name).to.equal(
+					'Mike Doe',
+					'no undo should have been done with the first edit'
+				)
+				expect(get(record).age).to.equal(43, 'should have redone the second edit')
+				expect(get(record)?.family?.father).to.equal(
+					'Brad Doe Sr.',
+					'should have redone the last edit'
+				)
+			})
+
+			it('should cut off undone history after edit if undo was called', () => {
+				reset()
+
+				editValue('name', 'Mike Doe')
+				editValue('age', 43)
+				editValue('family.father', 'Brad Doe Sr.')
+
+				undo()
+				undo()
+				editValue('family.mother', 'July Doe')
+
+				expect(get(history).length).to.equal(2, 'should have removed 2 history entries and added 1')
+				expect(get(history)[0].current).to.equal('Mike Doe', 'should be the first edit')
+				expect(get(history)[1].current).to.equal(
+					'July Doe',
+					'should be the last edit after undo actions'
+				)
 			})
 		})
 	})
