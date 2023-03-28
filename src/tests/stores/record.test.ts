@@ -91,6 +91,11 @@ describe('RECORD STORE', () => {
 				)
 				expect(get(history).length).to.equal(1, 'should have one history entry')
 				expect(get(history)[0].current).to.equal('James Doe', 'should have the last value')
+				expect(get(history)[0].path).to.equal('name', 'should have the last edit path')
+				expect(get(history)[0].previous).to.equal(
+					mockRecord.name,
+					'previous value should be the initial value'
+				)
 			})
 
 			it('should create a new history entry on value edit if the previous edit for the value was over 1 second ago', async () => {
