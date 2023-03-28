@@ -27,11 +27,13 @@ export const history: Writable<HistoryEntry[]> = writable([])
 export const historyIndex: Writable<number> = writable(0)
 
 const addToHistory = (path: SimplePath, previous: AnyValue, current: AnyValue) => {
-	const historyValue = _.cloneDeep(get(history))
+	let historyValue = _.cloneDeep(get(history))
 	const historyIndexValue = get(historyIndex)
 
 	// if the history index is not at the end, remove the rest of the history because it is no longer valid
-	if (historyIndexValue > 0) history.set(_.cloneDeep(historyValue.slice(0, historyIndexValue)))
+	if (historyIndexValue < historyValue.length - 1) {
+		historyValue = _.cloneDeep(historyValue.slice(0, historyIndexValue + 1))
+	}
 
 	history.set([
 		...historyValue,
@@ -74,6 +76,30 @@ const handleHistory = (path: SimplePath, previous: AnyValue, current: AnyValue):
 	addToHistory(path, previous, current)
 }
 
-export const undo = () => {}
+// ** UNDO / REDO
 
-export const redo = () => {}
+export const undo = () => {
+	const historyValue = _.cloneDeep(get(history))
+	const historyEntry = _.cloneDeep(historyValue[get(historyIndex)])
+
+	if (!historyEntry) return // if there is no history entry, do nothing
+
+	const recordValue = _.cloneDeep(get(record))
+	_.set(recordValue, historyEntry.path, historyEntry.previous)
+	record.set(recordValue)
+
+	historyIndex.set(get(historyIndex) - 1) // lower the history index to know where we are in the history
+}
+
+export const redo = () => {
+	const historyValue = _.cloneDeep(get(history))
+	const historyEntry = _.cloneDeep(historyValue[get(historyIndex) + 1])
+
+	if (!historyEntry) return // if there is no history entry, do nothing
+
+	const recordValue = _.cloneDeep(get(record))
+	_.set(recordValue, historyEntry.path, historyEntry.current)
+	record.set(recordValue)
+
+	historyIndex.set(get(historyIndex) + 1) // raise the history index to know where we are in the history
+}

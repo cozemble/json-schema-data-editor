@@ -163,6 +163,8 @@ describe('RECORD STORE', () => {
 				editValue('name', 'Mike Doe')
 				editValue('age', 43)
 
+				expect(get(historyIndex)).to.equal(1, 'should have an index of 1')
+
 				undo()
 
 				expect(get(record).name).to.equal(
@@ -260,6 +262,7 @@ describe('RECORD STORE', () => {
 				editValue('family.mother', 'July Doe')
 
 				expect(get(history).length).to.equal(2, 'should have removed 2 history entries and added 1')
+
 				expect(get(history)[0].current).to.equal('Mike Doe', 'should be the first edit')
 				expect(get(history)[1].current).to.equal(
 					'July Doe',
