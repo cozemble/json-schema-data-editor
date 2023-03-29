@@ -157,6 +157,22 @@ describe('RECORD STORE', () => {
 		})
 
 		describe('- SHOULD UNDO & REDO', () => {
+			it('should not undo if no history', () => {
+				reset()
+
+				undo()
+
+				expect(get(record)).to.equal(mockRecord, 'should not have undone anything')
+			})
+
+			it('should not redo if no history', () => {
+				reset()
+
+				redo()
+
+				expect(get(record)).to.equal(mockRecord, 'should not have redone anything')
+			})
+
 			it('should undo the last edit', () => {
 				reset()
 
@@ -172,6 +188,25 @@ describe('RECORD STORE', () => {
 					'no undo should have been done with the first edit'
 				)
 				expect(get(record).age).to.equal(mockRecord.age, 'should have undone the last edit')
+			})
+
+			it('should undo if the same property is edited multiple times', async () => {
+				reset()
+
+				editValue('name', 'Mike Doe')
+
+				await new Promise<void>((resolve) =>
+					setTimeout(() => {
+						editValue('name', 'James Doe')
+						resolve()
+					}, 1100)
+				)
+
+				expect(get(history)[1].current).to.equal('James Doe', 'should have the last value')
+
+				undo()
+
+				expect(get(record).name).to.equal('Mike Doe', 'should have undone the last edit')
 			})
 
 			it('should redo the last undo', () => {
