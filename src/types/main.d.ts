@@ -1,5 +1,5 @@
 /** The path to the field in the data */
-declare type Path = string[]
+declare type Path = (string | number)[]
 declare type SimplePath = string
 
 /** History log entry */
@@ -10,7 +10,7 @@ declare interface HistoryEntry {
 	timestamp: number
 
 	/** The value of the field before the change */
-	previous: AnyValue
+	previous: any
 	/** The value of the field after the change */
-	current: AnyValue
+	current: any
 }
