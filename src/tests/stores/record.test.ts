@@ -1,8 +1,52 @@
 import { describe, it, expect } from 'vitest'
-import { render, screen } from '@testing-library/svelte'
 import { get } from 'svelte/store'
 
-import { record, editValue, history, historyIndex, undo, redo } from '../../lib/stores/record'
+import {
+	record,
+	editValue,
+	history,
+	historyIndex,
+	undo,
+	redo,
+	validate,
+	handleSubmit
+} from '../../lib/stores/record'
+import { modelStore } from '../../lib/stores/model'
+import { errors } from '../../lib/stores/errors'
+
+const mockModel: CozJSONSchema = {
+	type: 'object',
+	properties: {
+		name: {
+			type: 'string'
+		},
+		age: {
+			type: 'number',
+			minimum: 18,
+			maximum: 99
+		},
+		family: {
+			type: 'object',
+			properties: {
+				father: {
+					type: 'string'
+				},
+				mother: {
+					type: 'string'
+				},
+				children: {
+					type: 'array',
+					items: {
+						type: 'string'
+					},
+					minItems: 1,
+					maxItems: 3
+				}
+			}
+		}
+	},
+	required: ['name', 'age', 'family']
+}
 
 const mockRecord = {
 	name: 'John Doe',
@@ -14,7 +58,38 @@ const mockRecord = {
 	}
 }
 
+const mockSubmitSuccessful: RecordSubmitFunction = async (record) => {
+	return {
+		success: true,
+		message: 'Record saved successfully'
+	}
+}
+
+const mockSubmitFailed: RecordSubmitFunction = async (record) => {
+	return {
+		success: false,
+		message: 'Record failed to save'
+	}
+}
+
+const mockSubmitFailedWithErrors: RecordSubmitFunction = async (record) => {
+	return {
+		success: false,
+		message: 'Record failed to save',
+		errors: [
+			{
+				instancePath: '',
+				schemaPath: '#/required',
+				keyword: 'required',
+				params: { missingProperty: 'name' },
+				message: "must have required property 'name'"
+			}
+		]
+	}
+}
+
 const reset = () => {
+	modelStore.set(mockModel)
 	history.set([])
 	historyIndex.set(0)
 	record.set(mockRecord)
@@ -304,6 +379,63 @@ describe('RECORD STORE', () => {
 					'should be the last edit after undo actions'
 				)
 			})
+		})
+	})
+
+	describe('# SUBMIT', () => {
+		it('should not validate invalid record', () => {
+			reset()
+
+			editValue('name', undefined)
+
+			const isValid = validate()
+			expect(isValid).to.equal(false, 'should not be valid')
+			expect(get(errors).length).to.equal(1, 'should have 1 error')
+		})
+
+		it('should validate valid record', () => {
+			reset()
+
+			const isValid = validate()
+			expect(isValid).to.equal(true, 'should be valid')
+			expect(get(errors).length).to.equal(0, 'should have 0 errors')
+		})
+
+		it('should not submit invalid record', async () => {
+			reset()
+
+			editValue('name', undefined)
+
+			const submitSuccess = await handleSubmit(mockSubmitSuccessful)
+
+			expect(submitSuccess).to.equal(false, 'should return false')
+			expect(get(errors).length).to.equal(1, 'should have 1 error')
+		})
+
+		it('should submit valid record', async () => {
+			reset()
+
+			const submitSuccess = await handleSubmit(mockSubmitSuccessful)
+
+			expect(submitSuccess).to.equal(true, 'should return true')
+			expect(get(errors).length).to.equal(0, 'should have 0 errors')
+		})
+
+		it('should submit but if backend fails, should not be successful', async () => {
+			reset()
+
+			const submitSuccess = await handleSubmit(mockSubmitFailed)
+
+			expect(submitSuccess).to.equal(false, 'should return false')
+		})
+
+		it('should save errors from backend', async () => {
+			reset()
+
+			const submitSuccess = await handleSubmit(mockSubmitFailedWithErrors)
+
+			expect(submitSuccess).to.equal(false, 'should return false')
+			expect(get(errors).length).to.equal(1, 'should have 1 error')
 		})
 	})
 })
