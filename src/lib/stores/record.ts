@@ -2,6 +2,10 @@ import type { Writable } from 'svelte/store'
 
 import { writable, get } from 'svelte/store'
 import _ from 'lodash'
+import Ajv from 'ajv'
+
+import { modelStore } from './model'
+import { errors } from './errors'
 
 const HISTORY_THRESHOLD = 1000
 
@@ -97,4 +101,36 @@ export const redo = (): void => {
 	record.set(recordValue)
 
 	historyIndex.set(get(historyIndex) + 1) // raise the history index to know where we are in the history
+}
+
+// # VALIDATION & SUBMISSION
+
+export const validate = (): boolean => {
+	const recordValue = _.cloneDeep(get(record))
+
+	const ajv = new Ajv({
+		allErrors: true
+	})
+
+	ajv.addVocabulary(['coz', 'formula', 'customComponent'])
+
+	const validate = ajv.compile(get(modelStore))
+	const isValid = validate(recordValue)
+
+	errors.set(validate.errors || [])
+
+	return isValid
+}
+
+export const handleSubmit = async (onSubmit: RecordSubmitFunction): Promise<boolean> => {
+	const recordValue = _.cloneDeep(get(record))
+	const isValid = validate()
+
+	if (!isValid) return false
+
+	const response = await onSubmit(recordValue)
+
+	errors.update((errorsValue) => [...errorsValue, ...(response.errors || [])])
+
+	return response.success
 }
