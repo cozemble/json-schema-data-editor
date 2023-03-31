@@ -14,3 +14,9 @@ declare interface HistoryEntry {
 	/** The value of the field after the change */
 	current: any
 }
+
+declare type RecordSubmitFunction = (record: any) => Promise<{
+	success: boolean
+	message: string
+	errors?: import('ajv').ErrorObject[]
+}>
