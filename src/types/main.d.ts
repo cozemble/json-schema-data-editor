@@ -20,3 +20,11 @@ declare type RecordSubmitFunction = (record: any) => Promise<{
 	message: string
 	errors?: import('ajv').ErrorObject[]
 }>
+
+/** Ajv' s ErrorObject to be globally accessible */
+declare type AjvErrorObject = import('ajv').ErrorObject
+
+/** AjvErrorObject with a path property that can be used in the UI */
+declare type ErrorObject = AjvErrorObject & {
+	path: SimplePath
+}
