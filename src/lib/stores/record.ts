@@ -5,7 +5,7 @@ import _ from 'lodash'
 import Ajv from 'ajv'
 
 import { modelStore } from './model'
-import { errors } from './errors'
+import { addErrors, resetErrors } from './errors'
 
 const HISTORY_THRESHOLD = 1000
 
@@ -112,12 +112,15 @@ export const validate = (): boolean => {
 		allErrors: true
 	})
 
+	// add custom keywords used in Cozemble model configurations
 	ajv.addVocabulary(['coz', 'formula', 'customComponent'])
 
 	const validate = ajv.compile(get(modelStore))
 	const isValid = validate(recordValue)
 
-	errors.set(validate.errors || [])
+	// handle errors
+	if (isValid) resetErrors()
+	else if (validate.errors) addErrors(validate.errors)
 
 	return isValid
 }
@@ -128,9 +131,11 @@ export const handleSubmit = async (onSubmit: RecordSubmitFunction): Promise<bool
 
 	if (!isValid) return false
 
+	// submit with the given function
 	const response = await onSubmit(recordValue)
 
-	errors.update((errorsValue) => [...errorsValue, ...(response.errors || [])])
+	// handle errors coming from the server
+	if (response.errors) addErrors(response.errors)
 
 	return response.success
 }
