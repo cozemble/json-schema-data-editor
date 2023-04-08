@@ -4,20 +4,20 @@
 	"description": "A data editor component package for JSON Schema objects with some extra functionality like formula fields.",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/cozemble/jsonschema-data-editor.git"
+		"url": "git+https://github.com/cozemble/json-schema-data-editor.git"
 	},
+	"author": "cozemble",
+	"license": "Apache-2.0",
 	"keywords": [
 		"JSON",
 		"Schema",
 		"editor",
 		"Cozemble"
 	],
-	"author": "cozemble",
-	"license": "MIT",
 	"bugs": {
-		"url": "https://github.com/cozemble/jsonschema-data-editor/issues"
+		"url": "https://github.com/cozemble/json-schema-data-editor/issues"
 	},
-	"homepage": "https://github.com/cozemble/jsonschema-data-editor#readme",
+	"homepage": "https://github.com/cozemble/json-schema-data-editor#readme",
 	"scripts": {
 		"dev": "vite dev",
 		"build": "vite build && npm run package",
