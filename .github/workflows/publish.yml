@@ -67,6 +67,9 @@ jobs:
       - name: Lint
         run: pnpm lint
       
+      - name: Init .svelte-kit directory
+        run: pnpm dev # to create .svelte-kit directory
+      
       - name: Test units
         run: pnpm test:unit
 
