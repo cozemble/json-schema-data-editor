@@ -1,0 +1,134 @@
+# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
+
+name: Node.js CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: '*'
+
+jobs:
+
+  quality:
+    name: Quality Check
+    runs-on: ubuntu-latest
+    
+    steps:      
+      - name: Check out code
+        uses: actions/checkout@v3
+        with:
+          # This makes Actions fetch all Git history so that Changesets can generate changelogs with the correct commits
+          fetch-depth: 0
+
+      - name: Cache
+        uses: actions/cache@v2.1.8
+        with:
+          # A list of files, directories, and wildcard patterns to cache and restore
+          path: /var/cache/apt/archives
+
+          # An explicit key for restoring and saving the cache
+          key: ${{ runner.os }}-apt-cache
+      
+          # An ordered list of keys to use for restoring the cache if no cache hit occurred for key
+          restore-keys: |
+            ${{ runner.os }}-apt-cache
+
+      - name: Cache sharp dependencies
+        uses: actions/cache@v2
+        with:
+          path: /var/cache/apt/archives
+          key: ${{ runner.os }}-apt-cache
+          restore-keys: |
+            ${{ runner.os }}-apt-cache
+            
+      - name: Install sharp dependencies
+        run: sudo apt-get update && sudo apt-get install -y libvips-dev
+        
+      - name: PNPM action setup
+      - uses: pnpm/action-setup@v2.0.1
+        with:
+          version: 7
+          run_install: false
+
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      
+      - name: Pretty
+        run: pnpm format
+      
+      - name: Lint
+        run: pnpm lint
+      
+      - name: Test units
+        run: pnpm test:unit
+
+  build:
+    name: Build and Test
+    runs-on: ${{ matrix.os }}
+    needs: [quality]
+
+    strategy:
+      matrix:
+        node-version: [14.x, 16.x, 18.x]
+        os: [ubuntu-latest, windows-latest]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Check out code
+      uses: actions/checkout@v3
+      with:
+        # This makes Actions fetch all Git history so that Changesets can generate changelogs with the correct commits
+        fetch-depth: 0
+
+    - name: Cache
+      uses: actions/cache@v2.1.8
+      with:
+        # A list of files, directories, and wildcard patterns to cache and restore
+        path: /var/cache/apt/archives
+
+        # An explicit key for restoring and saving the cache
+        key: ${{ runner.os }}-apt-cache
+
+        # An ordered list of keys to use for restoring the cache if no cache hit occurred for key
+        restore-keys: |
+          ${{ runner.os }}-apt-cache
+
+    - name: Cache sharp dependencies
+      uses: actions/cache@v2
+      with:
+        path: /var/cache/apt/archives
+        key: ${{ runner.os }}-apt-cache
+        restore-keys: |
+          ${{ runner.os }}-apt-cache
+
+    - name: Install sharp dependencies
+      run: sudo apt-get update && sudo apt-get install -y libvips-dev
+
+    - name: PNPM action setup
+    - uses: pnpm/action-setup@v2.0.1
+      with:
+        version: 7
+        run_install: false
+        
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'pnpm'
+
+    - name: Install dependencies
+      run: pnpm install --frozen-lockfile
+      
+    - name: Build
+      run: pnpm build
+
