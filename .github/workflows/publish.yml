@@ -66,6 +66,10 @@ jobs:
       
       - name: Lint
         run: pnpm lint
+
+      # Actually not wanted in this workflow, but needed to create .svelte-kit folder for the next step
+      - name: Build
+        run: pnpm build
       
       - name: Test units
         run: pnpm test:unit
