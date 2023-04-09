@@ -72,7 +72,6 @@ jobs:
         version: 8
         run_install: false
 
-
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v3
       with:
@@ -84,4 +83,7 @@ jobs:
       
     - name: Build
       run: pnpm build
+
+    - name: Test
+      run: pnpm test
 
