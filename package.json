@@ -1,6 +1,6 @@
 {
 	"name": "@cozemble/json-schema-data-editor",
-	"version": "0.0.0-development",
+	"version": "0.1.0",
 	"description": "A data editor component package for JSON Schema objects with some extra functionality like formula fields.",
 	"repository": {
 		"type": "git",
@@ -29,8 +29,7 @@
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"test:unit": "vitest",
 		"lint": "prettier --plugin-search-dir . --check . && eslint .",
-		"format": "prettier --plugin-search-dir . --write .",
-		"semantic-release": "semantic-release --branches main"
+		"format": "prettier --plugin-search-dir . --write ."
 	},
 	"exports": {
 		".": {
@@ -51,9 +50,9 @@
 		"@sveltejs/package": "^2.0.0",
 		"@sveltejs/vite-plugin-svelte": "^2.0.4",
 		"@testing-library/svelte": "^3.2.2",
+		"@types/lodash": "^4.14.191",
 		"@typescript-eslint/eslint-plugin": "^5.45.0",
 		"@typescript-eslint/parser": "^5.45.0",
-		"@types/lodash": "^4.14.191",
 		"autoprefixer": "^10.4.14",
 		"eslint": "^8.28.0",
 		"eslint-config-prettier": "^8.5.0",
@@ -70,8 +69,7 @@
 		"tslib": "^2.4.1",
 		"typescript": "^5.0.0",
 		"vite": "^4.2.0",
-		"vitest": "^0.25.3",
-		"semantic-release": "^21.0.1"
+		"vitest": "^0.25.3"
 	},
 	"svelte": "./dist/index.js",
 	"types": "./dist/index.d.ts",
