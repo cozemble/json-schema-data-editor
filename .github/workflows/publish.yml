@@ -104,6 +104,7 @@ jobs:
         id: release
         with:
           release-type: node
+          release-as: v0.1.0 # remove after first release 
           # use 0.x.x for pre-major releases:
           bump-minor-pre-major: true 
           bump-patch-for-minor-pre-major: true 
