@@ -104,7 +104,6 @@ jobs:
         id: release
         with:
           release-type: node
-          prerelease: true
           # use 0.x.x for pre-major releases:
           bump-minor-pre-major: true 
           bump-patch-for-minor-pre-major: true 
