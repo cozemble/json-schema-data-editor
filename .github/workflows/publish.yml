@@ -16,7 +16,7 @@ permissions:
 jobs:
 
   quality:
-    name: Quality Check
+    name: ✨ Quality Check
     runs-on: ubuntu-latest
     
     steps:      
@@ -25,8 +25,9 @@ jobs:
         with:
           # This makes Actions fetch all Git history so that Changesets can generate changelogs with the correct commits
           fetch-depth: 0
-        
-      - uses: pnpm/action-setup@v2.2.4
+       
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2.2.4
         with:
           version: 8
           run_install: false
@@ -37,7 +38,7 @@ jobs:
           node-version: 18
           cache: 'pnpm'
 
-      - name: Install dependencies
+      - name: 📥 Install dependencies
         run: pnpm install --frozen-lockfile
       
       - name: Pretty
@@ -46,62 +47,28 @@ jobs:
       - name: Lint
         run: pnpm lint
 
-      # Actually not wanted in this workflow, but needed to create .svelte-kit folder for the next step
-      - name: Build
+      - name: 🛠️ Build Application
         run: pnpm build
       
-      - name: Test units
+      - name: 🧪 Test Units
         run: pnpm test:unit
 
-  build:
-    name: Build and Test
-    runs-on: ${{ matrix.os }}
-    needs: [quality]
+      - name: 📥 Install Playwright
+        run: npx playwright install
 
-    strategy:
-      matrix:
-        node-version: [18.x]
-        os: [ubuntu-latest, windows-latest]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
-
-    steps:
-    - name: Check out code
-      uses: actions/checkout@v3
-      with:
-        # This makes Actions fetch all Git history so that Changesets can generate changelogs with the correct commits
-        fetch-depth: 0
-        
-    - uses: pnpm/action-setup@v2.2.4
-      with:
-        version: 8
-        run_install: false
-
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'pnpm'
-
-    - name: Install dependencies
-      run: pnpm install --frozen-lockfile
-      
-    - name: Build
-      run: pnpm build
-
-    - name: Install Playwright
-      run: npx playwright install
-
-    - name: Test
-      run: pnpm test
+      - name: 🧪 Test Application
+        run: pnpm test
 
   release-please:
+    name: 🚀 Version and Publish
     runs-on: ubuntu-latest
-    needs: [quality, build]
+    needs: [quality]
     # only run this job on main branch:
     if: ${{ github.ref == 'refs/heads/main' }} 
     steps:
-      - uses: google-github-actions/release-please-action@v3
-        id: release
+      - name: Version with Release Please
+        uses: google-github-actions/release-please-action@v3
+        id: version
         with:
           release-type: node
           prerelease: true
@@ -114,37 +81,39 @@ jobs:
       # these if statements ensure that a publication only occurs when
       # a new release is created:
       - name: Check out code
-        if: ${{ steps.release.outputs.release_created }}
+        if: ${{ steps.version.outputs.release_created }}
         uses: actions/checkout@v3
         with:
           # This makes Actions fetch all Git history so that Changesets can generate changelogs with the correct commits
           fetch-depth: 0
-        
-      - uses: pnpm/action-setup@v2.2.4
-        if: ${{ steps.release.outputs.release_created }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2.2.4
+        if: ${{ steps.version.outputs.release_created }}
         with:
           version: 8
           run_install: false
   
       - name: Use Node.js 18
-        if: ${{ steps.release.outputs.release_created }}
+        if: ${{ steps.version.outputs.release_created }}
         uses: actions/setup-node@v3
         with:
           node-version: 18
           registry-url: 'https://registry.npmjs.org'
           cache: 'pnpm'
-      
-      - name: Install dependencies
-        if: ${{ steps.release.outputs.release_created }}
+
+      - name: 📥 Install dependencies
+        if: ${{ steps.version.outputs.release_created }}
         run: pnpm install --frozen-lockfile
         
-      - name: Build
-        if: ${{ steps.release.outputs.release_created }}
-        run: pnpm build
+      - name: 🛠️ Build Package
+        if: ${{ steps.version.outputs.release_created }}
+        run: pnpm run package
 
-      - run: npm publish
+      - name: 📦 Publish to NPM 
+        run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
-        if: ${{ steps.release.outputs.release_created }}    
+        if: ${{ steps.version.outputs.release_created }}    
 
           
