@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.1](https://github.com/cozemble/json-schema-data-editor/compare/v0.1.0...v0.1.1) (2023-04-11)
+
+
+### Features
+
+* unfinished RecordEditor component ([787f005](https://github.com/cozemble/json-schema-data-editor/commit/787f005c396ae7e77bd12a8b84865233e4ab8949))
+
 ## 0.1.0 (2023-04-10)
 
 
