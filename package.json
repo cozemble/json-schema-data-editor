@@ -1,6 +1,6 @@
 {
 	"name": "@cozemble/json-schema-data-editor",
-	"version": "0.1.1",
+	"version": "0.1.2",
 	"description": "A data editor component package for JSON Schema objects with some extra functionality like formula fields.",
 	"repository": {
 		"type": "git",
