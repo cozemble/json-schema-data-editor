@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.2](https://github.com/cozemble/json-schema-data-editor/compare/v0.1.1...v0.1.2) (2023-04-11)
+
+
+### Bug Fixes
+
+* **RecordEditor:** bad imports of stores issue ([0924f86](https://github.com/cozemble/json-schema-data-editor/commit/0924f8685dc247cebd095b74f669ae5bba5649f8))
+
 ## [0.1.1](https://github.com/cozemble/json-schema-data-editor/compare/v0.1.0...v0.1.1) (2023-04-11)
 
 
