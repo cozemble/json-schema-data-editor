@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { modelStore } from '../../lib/stores/model'
-	import { record as recordStore, handleSubmit } from '../../lib/stores/record'
+	import { modelStore } from '$lib/stores/model'
+	import { record as recordStore, handleSubmit } from '$lib/stores/record'
 	import LoadingButton from './LoadingButton.svelte'
 
 	export let model: CozJSONSchema
