@@ -1,8 +1,12 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+	mode: 'jit',
 	content: ['./src/**/*.{html,js,svelte,ts}'],
 	theme: {
-		extend: {}
+		extend: {},
+		fontFamily: {
+			sans: ['DM Sans', 'sans-serif']
+		}
 	},
 	plugins: [require('daisyui')],
 	daisyui: {
