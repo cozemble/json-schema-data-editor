@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.1.3](https://github.com/cozemble/json-schema-data-editor/compare/v0.1.2...v0.1.3) (2023-04-18)
+
+
+### Features
+
+* **styles:** add some styles to RecordEditor ([f7b17f8](https://github.com/cozemble/json-schema-data-editor/commit/f7b17f8fa2d7d4d2284d5859e8921f012268c2e7))
+
+
+### Bug Fixes
+
+* **dependencies:** add missing dependencies ([ad7aca6](https://github.com/cozemble/json-schema-data-editor/commit/ad7aca61ce41e1f40f86a1290a7acb439dda6f08))
+
 ## [0.1.2](https://github.com/cozemble/json-schema-data-editor/compare/v0.1.1...v0.1.2) (2023-04-11)
 
 
