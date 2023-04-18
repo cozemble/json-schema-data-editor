@@ -12,13 +12,13 @@
 	$: recordStore.set(record)
 </script>
 
-<div class="card w-full">
+<div class="card w-min bg-slate-200 p-8">
 	<h2 class="font-bold text-xl text-primary capitalize">title</h2>
 	<div class="card-body flex flex-col gap-4 rounded-lg">
 		{#each Object.entries($modelStore.properties || {}) as [key, value]}
 			<div>
-				<label for={key}>{key}</label>
-				<input type="text" name={key} bind:value={$recordStore[key]} />
+				<label for={key} class="label">{key}</label>
+				<input type="text" class="input input-bordered" name={key} bind:value={$recordStore[key]} />
 			</div>
 		{/each}
 	</div>
@@ -28,6 +28,6 @@
 				await handleSubmit(onSubmit)
 			}}>Submit</LoadingButton
 		>
-		<button on:click={onCancel}>Cancel</button>
+		<button on:click={onCancel} class="btn btn-warning">Cancel</button>
 	</div>
 </div>
