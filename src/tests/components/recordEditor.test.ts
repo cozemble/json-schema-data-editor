@@ -176,8 +176,17 @@ const onCancel = () => console.log('cancelled')
 describe('RECORD EDITOR', () => {
 	// TODO test that the form renders correctly
 	// TODO test that the form handles custom input components correctly
-	// describe('# RENDERING', () => {
-	// })
+	describe('# RENDERING', () => {
+		it('should render an empty form for the given model', () => {
+			render(RecordEditor, { model: mockModel, onSubmit: onSubmitSuccess, onCancel })
+			expect(screen.getByText('Name')).to.exist
+			expect(screen.getByText('Date of birth')).to.exist
+			expect(screen.getByText('Age')).to.exist
+			expect(screen.getByText('Parents')).to.exist
+			expect(screen.getByText('Children')).to.exist
+		})
+	})
+
 	// TODO test that the form handles formula fields correctly
 	// describe('# FORMULA FIELDS', () => {
 	// })
