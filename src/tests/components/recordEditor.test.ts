@@ -65,7 +65,7 @@ const mockModel: CozJSONSchema = {
 			}
 		},
 		// * object type field
-		education: {
+		parents: {
 			type: 'object',
 			title: 'Parents',
 			properties: {

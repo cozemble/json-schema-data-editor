@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { modelStore } from '$lib/stores/model'
-	import { record as recordStore, handleSubmit } from '$lib/stores/record'
+	import { modelStore } from '../stores/model'
+	import { record as recordStore, handleSubmit } from '../stores/record'
 	import LoadingButton from './LoadingButton.svelte'
 
 	export let model: CozJSONSchema
-	export let record: any
+	export let record: any = {}
 	export let onSubmit: RecordSubmitFunction
 	export let onCancel: () => void
 
@@ -17,7 +17,7 @@
 	<div class="card-body flex flex-col gap-4 rounded-lg">
 		{#each Object.entries($modelStore.properties || {}) as [key, value]}
 			<div>
-				<label for={key} class="label">{key}</label>
+				<label for={key} class="label">{value.title || key}</label>
 				<input type="text" class="input input-bordered" name={key} bind:value={$recordStore[key]} />
 			</div>
 		{/each}
