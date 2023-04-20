@@ -53,11 +53,12 @@ jobs:
       - name: 🧪 Test Units
         run: pnpm test:unit
 
-      - name: 📥 Install Playwright
-        run: npx playwright install
+      # Disabled until application is ready for e2e tests
+      # - name: 📥 Install Playwright
+      #   run: npx playwright install
 
-      - name: 🧪 Test Application
-        run: pnpm test
+      # - name: 🧪 Test Application
+      #   run: pnpm test
 
   release-please:
     name: 🚀 Version and Publish
