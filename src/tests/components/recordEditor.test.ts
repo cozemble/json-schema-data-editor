@@ -123,6 +123,54 @@ const mockModel: CozJSONSchema = {
 	}
 }
 
+const record = {
+	name: 'John Doe',
+	dateOfBirth: '1990-01-01',
+	age: 30,
+	parents: {
+		mother: 'Jane Doe',
+		father: 'John Doe'
+	},
+	children: [
+		{
+			name: 'Jane Doe',
+			dayOfBirth: '2010-01-01',
+			age: 10
+		},
+		{
+			name: 'John Doe',
+			dayOfBirth: '2012-01-01',
+			age: 8
+		}
+	]
+}
+
+const onSubmitSuccess: RecordSubmitFunction = async (record) => ({
+	success: true,
+	message: 'Record saved successfully'
+})
+
+const onSubmitError: RecordSubmitFunction = async (record) => ({
+	success: false,
+	message: 'Record could not be saved'
+})
+
+const onSubmitErrorWithErrors: RecordSubmitFunction = async (record) => ({
+	success: false,
+	message: 'Record could not be saved',
+	errors: [
+		{
+			instancePath: '',
+			schemaPath: '#/required',
+			keyword: 'required',
+			params: { missingProperty: 'name' },
+			message: "must have required property 'name'"
+		}
+	]
+})
+
+const onCancel = () => console.log('cancelled')
+
 // TODO create a mock record for the model
 
 describe('RECORD EDITOR', () => {
